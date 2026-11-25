@@ -15,13 +15,13 @@ import json
 
 st.set_page_config(page_title="Botche 5m Up/Down v2.1", layout="wide")
 st.title("Botche 5.1 – BTC 5m Up/Down (v2.1)")
-st.caption("Price to Beat · stop primary at 0.44 + 50% hedge opposite")
+st.caption("Price to Beat · stop primary at 0.50 + 50% hedge opposite")
 
 # Rules
 SHARES = 15
 BUY_PRICES = [0.88, 0.89, 0.90]
 PULLBACK_LEVEL = 0.70
-HEDGE_TRIGGER = 0.44          # stop primary + open hedge when bought side hits this
+HEDGE_TRIGGER = 0.50          # stop primary + open hedge when bought side hits this
 HEDGE_RATIO = 0.50
 NO_TRADE_START = 75
 NO_TRADE_END = 85
@@ -173,7 +173,7 @@ st.sidebar.write(f"Records: **{len(st.session_state.positions)} / {MAX_RECORDS}*
 st.sidebar.header("Rules")
 st.sidebar.write("One primary buy per window")
 st.sidebar.write("Buy: 0.88 → 0.89 → 0.90")
-st.sidebar.write("Stop primary at 0.44 + 50% hedge")
+st.sidebar.write("Stop primary at 0.50 + 50% hedge")
 st.sidebar.write("Pullback rule if >0.88 early")
 auto = st.sidebar.checkbox("Auto refresh (1s)", value=True)
 if st.sidebar.button("Reset test"):
@@ -331,7 +331,7 @@ if market and market.get("markets"):
             and len(st.session_state.positions) < MAX_RECORDS
         ):
             # Buy if price is in the 0.875–0.905 zone (covers 0.88/0.89/0.90)
-            if 0.875 <= live_price <= 0.905:
+            if 0.879 <= live_price <= 0.901:
                 target = min(BUY_PRICES, key=lambda bp: abs(live_price - bp))
                 pos = {
                     "token": tok,
@@ -374,7 +374,7 @@ if market and market.get("markets"):
             recovered = int(primary_pos["cost"] * (live_price / max(primary_pos["buy_price"], 0.01)))
             primary_pos["status"] = "stopped"
             primary_pos["sell_price"] = round(live_price, 3)
-            primary_pos["result"] = "stop @ 0.44"
+            primary_pos["result"] = "stop @ 0.50"
             primary_pos["pnl"] = recovered - primary_pos["cost"]
             primary_pos["resolution"] = "stopped"
             st.session_state.bank += recovered
@@ -470,7 +470,7 @@ else:
     st.write("No logs yet.")
 
 st.divider()
-st.caption("Botche 5.1 · stop primary at 0.44 + 50% opposite hedge")
+st.caption("Botche 5.1 · stop primary at 0.50 + 50% opposite hedge")
 
 if auto:
     time.sleep(1)
